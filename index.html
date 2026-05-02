@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historias de Vida - Efecto Exagerado</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            background-color: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #parallax-viewport {
+            position: relative;
+            /* Priorizamos el alto: la caja siempre tendrá el alto de la pantalla */
+            height: 100vh; 
+            /* Calculamos el ancho basado en la proporción original de tu imagen (aprox 9:16) */
+            aspect-ratio: 9 / 16; 
+            perspective: 1200px;
+            overflow: hidden;
+            border: 2px solid #333; /* Guía visual del contenedor */
+        }
+
+        .layer {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            /* background-size: contain asegura que se vea el alto completo sin recortes */
+            background-size: auto 100vh; 
+            background-position: center;
+            background-repeat: no-repeat;
+            width: 100%;
+            height: 100%;
+            will-change: transform;
+        }
+
+        /* Capas (Recuerda tener los archivos PNG en la misma carpeta) */
+        .layer-bg { background-image: url('capa_fondo.png'); z-index: 1; }
+        .layer-mid { background-image: url('capa_medio.png'); z-index: 2; }
+        .layer-fg { background-image: url('capa_frente.png'); z-index: 3; }
+
+    </style>
+</head>
+<body>
+
+    <div id="parallax-viewport">
+        <div class="layer layer-bg" id="bg"></div>
+        <div class="layer layer-mid" id="mid"></div>
+        <div class="layer layer-fg" id="fg"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const layers = [
+                { el: document.getElementById('bg'), depth: 0.2 },  // Fondo se mueve poco
+                { el: document.getElementById('mid'), depth: 0.8 }, // Capa media se mueve bastante
+                { el: document.getElementById('fg'), depth: 1.8 }   // ¡Frente se mueve muchísimo!
+            ];
+
+            // CONFIGURACIÓN EXAGERADA
+            const radius = 20; // Aumentado de 20 a 60 para un giro amplio
+            const speed = 0.02; // Velocidad de rotación aumentada
+            let angle = 0;
+
+            function animate() {
+                angle += speed;
+
+                const centerX = radius * Math.cos(angle);
+                const centerY = radius * Math.sin(angle);
+
+                layers.forEach(layer => {
+                    const moveX = centerX * layer.depth;
+                    const moveY = centerY * layer.depth;
+                    
+                    /* Aplicamos el movimiento. 
+                       Aumentamos el scale a 1.4 para que al desplazarse 60px 
+                       no se vean los bordes de la imagen cortados.
+                    */
+                    layer.el.style.transform = `translate(calc(-50% + ${moveX}px), calc(-50% + ${moveY}px)) scale(1.4)`;
+                });
+
+                requestAnimationFrame(animate);
+            }
+
+            animate();
+        });
+    </script>
+</body>
+</html>
