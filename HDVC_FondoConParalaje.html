@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Historias de Vida - Efecto Exagerado</title>
+    <title>Historias de Vida - Paralaje Mouse</title>
     <style>
         body, html {
             margin: 0;
@@ -18,33 +18,30 @@
 
         #parallax-viewport {
             position: relative;
-            /* Priorizamos el alto: la caja siempre tendrá el alto de la pantalla */
             height: 100vh; 
-            /* Calculamos el ancho basado en la proporción original de tu imagen (aprox 9:16) */
             aspect-ratio: 9 / 16; 
             perspective: 1200px;
             overflow: hidden;
-            border: 2px solid #333; /* Guía visual del contenedor */
+            border: 2px solid #333;
         }
 
         .layer {
             position: absolute;
             top: 50%;
             left: 50%;
-            /* background-size: contain asegura que se vea el alto completo sin recortes */
-            background-size: auto 100vh; 
+            background-size: auto 110vh; /* Un poco más grande para evitar bordes */
             background-position: center;
             background-repeat: no-repeat;
-            width: 100%;
-            height: 100%;
+            width: 120%; /* Ancho extra para el desplazamiento */
+            height: 120%;
             will-change: transform;
+            /* Suaviza el movimiento para que no sea brusco */
+            transition: transform 0.1s ease-out; 
         }
 
-        /* Capas (Recuerda tener los archivos PNG en la misma carpeta) */
         .layer-bg { background-image: url('capa_fondo.png'); z-index: 1; }
         .layer-mid { background-image: url('capa_medio.png'); z-index: 2; }
         .layer-fg { background-image: url('capa_frente.png'); z-index: 3; }
-
     </style>
 </head>
 <body>
@@ -57,38 +54,29 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            const viewport = document.getElementById('parallax-viewport');
             const layers = [
-                { el: document.getElementById('bg'), depth: 0.2 },  // Fondo se mueve poco
-                { el: document.getElementById('mid'), depth: 0.8 }, // Capa media se mueve bastante
-                { el: document.getElementById('fg'), depth: 1.8 }   // ¡Frente se mueve muchísimo!
+                { el: document.getElementById('bg'), depth: 15 },  // Movimiento sutil
+                { el: document.getElementById('mid'), depth: 40 }, // Movimiento medio
+                { el: document.getElementById('fg'), depth: 80 }   // Movimiento fuerte
             ];
 
-            // CONFIGURACIÓN EXAGERADA
-            const radius = 20; // Aumentado de 20 a 60 para un giro amplio
-            const speed = 0.02; // Velocidad de rotación aumentada
-            let angle = 0;
-
-            function animate() {
-                angle += speed;
-
-                const centerX = radius * Math.cos(angle);
-                const centerY = radius * Math.sin(angle);
+            window.addEventListener('mousemove', (e) => {
+                // Calculamos la posición del mouse relativa al centro de la pantalla
+                // El resultado irá de -0.5 a 0.5 aproximadamente
+                const x = (e.clientX - window.innerWidth / 2) / (window.innerWidth / 2);
+                const y = (e.clientY - window.innerHeight / 2) / (window.innerHeight / 2);
 
                 layers.forEach(layer => {
-                    const moveX = centerX * layer.depth;
-                    const moveY = centerY * layer.depth;
+                    // Multiplicamos la posición por la profundidad (depth) de cada capa
+                    const moveX = x * layer.depth;
+                    const moveY = y * layer.depth;
                     
-                    /* Aplicamos el movimiento. 
-                       Aumentamos el scale a 1.4 para que al desplazarse 60px 
-                       no se vean los bordes de la imagen cortados.
-                    */
-                    layer.el.style.transform = `translate(calc(-50% + ${moveX}px), calc(-50% + ${moveY}px)) scale(1.4)`;
+                    // Aplicamos el desplazamiento manteniendo el centrado (-50%)
+                    // Usamos un scale de 1.2 para que haya margen de imagen en los bordes
+                    layer.el.style.transform = `translate(calc(-50% + ${-moveX}px), calc(-50% + ${-moveY}px)) scale(1.2)`;
                 });
-
-                requestAnimationFrame(animate);
-            }
-
-            animate();
+            });
         });
     </script>
 </body>
