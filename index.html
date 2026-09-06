@@ -13,7 +13,7 @@
             background-color: #000;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: left;
         }
 
         #parallax-viewport {
@@ -59,8 +59,8 @@
         document.addEventListener('DOMContentLoaded', () => {
             const layers = [
                 { el: document.getElementById('bg'), depth: 0.2 },  // Fondo se mueve poco
-                { el: document.getElementById('mid'), depth: 0.8 }, // Capa media se mueve bastante
-                { el: document.getElementById('fg'), depth: 1.8 }   // ¡Frente se mueve muchísimo!
+                { el: document.getElementById('mid'), depth: 0.5 }, // Capa media se mueve bastante
+                { el: document.getElementById('fg'), depth: 2.0 }   // ¡Frente se mueve muchísimo!
             ];
 
             // CONFIGURACIÓN EXAGERADA
